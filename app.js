@@ -47,6 +47,8 @@ app.post("/login",async (req,res)=>{
         const signIn = await teleClient.invoke(new Api.auth.SignIn({
             phoneNumber,phoneCode,phoneCodeHash
         }))
+        const userAuth = signIn['user']
+        console.log(userAuth)
         res.json("success")
     } catch (error) {
         res.json("error")
