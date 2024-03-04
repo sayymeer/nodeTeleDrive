@@ -14,7 +14,7 @@ app.use("/v1",router)
 
 // Handling Errors
 app.use((err,req,res,next) => {
-    console.error(err)
+    console.log(err.stack)
     res.status(500).send("Internal server error")
 })
 

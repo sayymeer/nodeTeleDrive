@@ -1,13 +1,13 @@
 import { StringSession } from "telegram/sessions/index.js";
 import { CONNECTION_RETRIES, apiCred, } from "../config.js";
-import { TelegramClient } from "telegram";
-import { addUser } from "../model/db.js";
+import { TelegramClient, Api } from "telegram";
+import { saveStringSession } from "../model/db.js";
 
-export const sendCodeHandler = async (req,res)=>{
+export const sendCodeHandler = async (req, res,next) => {
     try {
-        const {phoneNumber} = req.body
+        const phoneNumber = req.body.user.phoneNo
         const stringSession = new StringSession("")
-        const teleClient = new TelegramClient(stringSession,apiCred.apiId,apiCred.apiHash,{connectionRetries:CONNECTION_RETRIES,})
+        const teleClient = new TelegramClient(stringSession, apiCred.apiId, apiCred.apiHash, { connectionRetries: CONNECTION_RETRIES, })
         await teleClient.connect()
         const { phoneCodeHash, timeout } = await teleClient.invoke(new Api.auth.SendCode({
             ...apiCred,
@@ -16,27 +16,32 @@ export const sendCodeHandler = async (req,res)=>{
                 allowFlashcall: true,
                 currentNumber: true,
                 allowAppHash: true,
-              })
+            })
         }))
-        res.json({phoneCodeHash})
+        const sess = teleClient.session.save()
+        await saveStringSession(phoneNumber,sess);
+        res.json({ phoneCodeHash })
     } catch (error) {
-        throw error
+        next(error)
     }
 }
 
-export const loginHandler = async (req,res) => {
+export const teleLoginHandler = async (req, res,next) => {
     try {
-        const { phoneNumber, phoneCode, phoneCodeHash } = req.body
-        const stringSession = new StringSession("")
-        const teleClient = new TelegramClient(stringSession,apiCred.apiId,apiCred.apiHash,{connectionRetries:CONNECTION_RETRIES,})
+        const { phoneCode, phoneCodeHash } = req.body
+        const phoneNumber = req.body.user.phoneNo
+        const m = req.body.user.session
+        console.log(phoneCode, phoneCodeHash, phoneNumber,m)
+        const stringSession = new StringSession(m)
+        const teleClient = new TelegramClient(stringSession, apiCred.apiId, apiCred.apiHash, { connectionRetries: CONNECTION_RETRIES, testServers:false})
         await teleClient.connect()
         const signIn = await teleClient.invoke(new Api.auth.SignIn({
-            phoneNumber,phoneCode,phoneCodeHash
+            phoneNumber, phoneCode, phoneCodeHash
         }))
         const session = teleClient.session.save()
-        await addUser(phoneNumber,"sameer",session)
+        await saveStringSession(phoneNumber, session)
         res.send("Success")
     } catch (error) {
-        throw error
+        next(error)
     }
 }
