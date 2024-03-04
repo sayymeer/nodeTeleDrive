@@ -15,6 +15,10 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    files:{
+        type:[String],
+        default: [],
+    },
 })
 
 connect(dbUri).then(console.log("Connected to DATABASE")).catch(err => console.error(err))
