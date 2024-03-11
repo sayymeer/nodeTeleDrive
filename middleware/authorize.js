@@ -5,10 +5,10 @@ export const authMiddleware = async (req, res, next) => {
     try {
         const user = await tokenDb(token)
         req.body.user = user;
-        // if (!req.user) {
-        //     res.status(500).send("You are not authorized")
-        //     next(new Error("You are not authorized"))
-        // }
+        if (!req.body.user) {
+            res.status(500).send("You are not authorized")
+            next(new Error("You are not authorized"))
+        }
         next()
     } catch (error) {
         res.status(500).send("You are not authorized")

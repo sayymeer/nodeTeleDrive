@@ -21,6 +21,7 @@ export const signUpHandler = async (req, res,next) => {
 export const loginHandler = async (req, res, next) => {
     try {
         const { phoneNo, password } = req.body
+        console.log(phoneNo,password)
         const b = await loginUser(phoneNo, password)
         if (b) {
             res.json({ token: b })

@@ -3,7 +3,6 @@ import { errorTest, signUpHandler, test, loginHandler } from "../controllers/com
 import { sendCodeHandler, teleLoginHandler } from "../controllers/auth.js";
 import { authMiddleware } from "../middleware/authorize.js";
 import multer from "multer";
-import path from "path";
 import { FileHandler } from "../controllers/sendFile.js";
 
 const storage = multer.diskStorage({
@@ -29,4 +28,4 @@ router.post('/login', loginHandler)
 router.post("/sendCode", authMiddleware, sendCodeHandler)
 router.post("/loginTelegram", authMiddleware, teleLoginHandler)
 
-router.post("/upload-file", authMiddleware,upload.single('file'), FileHandler)
+router.post("/upload-file", upload.single('file'),authMiddleware, FileHandler)
