@@ -11,8 +11,8 @@ export const errorTest = (req, res) => {
 export const signUpHandler = async (req, res,next) => {
     try {
         const { phoneNo, password } = req.body
-        await signUpUser(phoneNo, password)
-        res.json("Okayy")
+        const user = await signUpUser(phoneNo, password)
+        res.json(user._id)
     } catch (error) {
         next(error)
     }

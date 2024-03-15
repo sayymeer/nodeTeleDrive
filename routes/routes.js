@@ -4,6 +4,7 @@ import { sendCodeHandler, teleLoginHandler } from "../controllers/auth.js";
 import { authMiddleware } from "../middleware/authorize.js";
 import multer from "multer";
 import { FileHandler } from "../controllers/sendFile.js";
+import { addToCollection, createCollection, getAllCollections, getAllFiles } from "../controllers/collections.js";
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -11,6 +12,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         req.fileName = Date.now()+file.originalname
+        req.fileOrgName = file.originalname
         cb(null, Date.now()+file.originalname); // Use the original file name for saving
     }
 });
@@ -29,3 +31,9 @@ router.post("/sendCode", authMiddleware, sendCodeHandler)
 router.post("/loginTelegram", authMiddleware, teleLoginHandler)
 
 router.post("/upload-file", upload.single('file'),authMiddleware, FileHandler)
+
+router.get("/getAllFiles",authMiddleware,getAllFiles)
+router.get("/getAllCollections",authMiddleware,getAllCollections)
+
+router.post("/createCollection",authMiddleware,createCollection)
+router.post("/addToCollection",authMiddleware,addToCollection)

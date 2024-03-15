@@ -2,6 +2,29 @@ import { Schema, connect, model } from "mongoose";
 import { createHash } from "node:crypto";
 import { dbUri } from "../config.js";
 
+const fileSchema = new Schema({
+    id:{
+        type:String,
+        required:true,
+    },
+    name:{
+        type:String,
+        required: true,
+    },
+})
+
+const collectionSchema = new Schema({
+    collectionName:{
+        type:String,
+        required:true,
+    },
+    files:{
+        type:[fileSchema],
+        required:true,
+        default:[],
+    }
+})
+
 const userSchema = new Schema({
     phoneNo: {
         type: String,
@@ -16,9 +39,13 @@ const userSchema = new Schema({
         required: true,
     },
     files:{
-        type:[String],
+        type:[fileSchema],
         default: [],
     },
+    collections:{
+        type:[collectionSchema],
+        default:[],
+    }
 })
 
 connect(dbUri).then(console.log("Connected to DATABASE")).catch(err => console.error(err))
@@ -30,7 +57,7 @@ export const signUpUser = async (phoneNo, password) => {
         const passHash = createHash('sha256').update(password).digest('hex')
         const user = new User({phoneNo,password:passHash})
         await user.save()
-        console.log("User registered successfully:", phoneNo);
+        return user
     } catch (err) {
         console.error("Error signing up:", err);
         throw new Error("Error Signing Up");
