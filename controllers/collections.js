@@ -20,11 +20,15 @@ export const createCollection = async (req,res) => {
 
 export const addToCollection = async (req,res) => {
     const {collectionName,user,file} = req.body
-    user.collections.forEach(element => {
-        if(element.name == collectionName){
+    console.log(collectionName)
+    const collections = user.collections
+    collections.forEach(element => {
+        if(element.collectionName == collectionName){
             element.files.push(file)
         }
     });
+    // user.collections = collections
+    console.log(user.collections)
     await user.save();
     res.json("Added Successfully")
 }

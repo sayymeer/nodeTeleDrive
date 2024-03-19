@@ -3,7 +3,7 @@ import { errorTest, signUpHandler, test, loginHandler } from "../controllers/com
 import { sendCodeHandler, teleLoginHandler } from "../controllers/auth.js";
 import { authMiddleware } from "../middleware/authorize.js";
 import multer from "multer";
-import { FileHandler } from "../controllers/sendFile.js";
+import { FileHandler, fileDownloadHandler } from "../controllers/sendFile.js";
 import { addToCollection, createCollection, getAllCollections, getAllFiles } from "../controllers/collections.js";
 
 const storage = multer.diskStorage({
@@ -37,3 +37,5 @@ router.get("/getAllCollections",authMiddleware,getAllCollections)
 
 router.post("/createCollection",authMiddleware,createCollection)
 router.post("/addToCollection",authMiddleware,addToCollection)
+
+router.get('/download',authMiddleware,fileDownloadHandler)

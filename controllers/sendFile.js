@@ -1,6 +1,6 @@
 import { StringSession } from "telegram/sessions/index.js";
 import { CONNECTION_RETRIES, apiCred } from "../config.js";
-import { TelegramClient } from "telegram";
+import { Api, TelegramClient } from "telegram";
 
 export const FileHandler = async (req, res, next) => {
     if (!req.file) {
@@ -24,4 +24,19 @@ export const FileHandler = async (req, res, next) => {
         id: uploadDetails.id,
         name: originalFileName
     });
+}
+
+export const fileDownloadHandler = async (req,res,next) => {
+    const {fileId} = req.body
+    const user = req.body.user
+    const sessionString = user.session
+    const session = new StringSession(sessionString)
+    const client = new TelegramClient(session, apiCred.apiId, apiCred.apiHash, { connectionRetries: CONNECTION_RETRIES })
+    await client.connect()
+    const buffer = await client.downloadMedia(new Api.Message({
+        id:Number(fileId)
+    }),{progressCallback:console.log})
+    console.log(buffer.length)
+    res.send(buffer)
+    await client.disconnect()
 }
