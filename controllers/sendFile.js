@@ -40,3 +40,11 @@ export const fileDownloadHandler = async (req,res,next) => {
     res.send(buffer)
     await client.disconnect()
 }
+
+export const deleteFile = async (req,res) => {
+    const {fileId} = req.body
+    const user = req.body.user
+    user.files = user.files.filter(file => file.id != fileId)
+    await user.save()
+    res.json("success")
+}
